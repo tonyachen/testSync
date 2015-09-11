@@ -24,7 +24,7 @@ var tStart = full.indexOf("mint-sso-token");
 var tEnd = full.indexOf("GMT;");
 var tValue = full.substring(tStart, tEnd+4);
 
-//did this through site
+/**did this through site...
 context.setProperty("JSessionID", jValue);
 context.setProperty("MintToken", tValue);
 
