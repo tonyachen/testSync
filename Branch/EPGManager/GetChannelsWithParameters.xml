@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:testCase id="33d9fd22-cd48-49dd-a9c7-44b25044d073" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="GetChannelsWithParameters" searchProperties="true" xmlns:con="http://eviware.com/soapui/config"><con:settings><con:setting id="33d9fd22-cd48-49dd-a9c7-44b25044d073fileName">GetChannelsWithParameters</con:setting></con:settings><con:testStep type="restrequest" name="GetApplicationAndBaseUrl" id="9de89197-9e82-41e8-858b-72879dfcf425"><con:settings/><con:config service="http://eclipselab1.vf.rogers.com" resourcePath="/platform/rest/v37/system/applications" methodName="Applications" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="GetApplicationAndBaseUrl" id="b10021b7-b812-4d5c-a973-caa91df66d59" mediaType="application/json"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="CAMP-SESSION" value="${CampID}" xmlns="http://eviware.com/soapui/config"/></con:setting></con:settings><con:endpoint>http://eclipselab1.vf.rogers.com</con:endpoint><con:request/><con:originalUri>http://eclipselab1.vf.rogers.com/platform/rest/v37/system/applications</con:originalUri><con:assertion type="Valid HTTP Status Codes" id="2a3ffd38-71aa-4134-83a5-de22615d3d38" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:parameters>
+  <con:entry key="X-DEBUG-HHID" value="${#Project#HHID}"/>
+  <con:entry key="X-W3-DEVICE-ID" value="${#Project#DeviceID}"/>
+  <con:entry key="Content-Type" value="application/json; charset=utf-8"/>
+</con:parameters><con:parameterOrder><con:entry>CAMP-SESSION</con:entry><con:entry>Content-Type</con:entry><con:entry>X-W3-DEVICE-ID</con:entry><con:entry>X-DEBUG-HHID</con:entry></con:parameterOrder></con:restRequest></con:config></con:testStep><con:testStep type="restrequest" name="StartSession" id="81226612-2c93-4067-bcdc-87801156f6d9"><con:settings/><con:config service="http://eclipselab1.vf.rogers.com" resourcePath="/platform/rest/v37/session/start" methodName="Start" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="StartSession" id="577fb335-9101-47a5-bff5-7bc7d4eddf10" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="CAMP-SESSION" value="${CampID}" xmlns="http://eviware.com/soapui/config"/></con:setting></con:settings><con:endpoint>http://eclipselab1.vf.rogers.com</con:endpoint><con:request>{
+   "additionalParameters": {
+      "deviceType": "${#Project#deviceType}",
+      "latitude": "${#Project#latitude}",
+      "longitude": "${#Project#longitude}"
+   }
+}</con:request><con:originalUri>http://eclipselab1.vf.rogers.com/platform/rest/v37/session/start</con:originalUri><con:assertion type="Valid HTTP Status Codes" id="10f10b34-d040-4503-88ac-3ac37fe6d3b1" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:parameters>
+  <con:entry key="X-DEBUG-HHID" value="${#Project#HHID}"/>
+  <con:entry key="X-W3-DEVICE-ID" value="${#Project#DeviceID}"/>
+  <con:entry key="Content-Type" value="application/json; charset=utf-8"/>
+</con:parameters><con:parameterOrder><con:entry>CAMP-SESSION</con:entry><con:entry>Content-Type</con:entry><con:entry>X-W3-DEVICE-ID</con:entry><con:entry>X-DEBUG-HHID</con:entry></con:parameterOrder></con:restRequest></con:config></con:testStep><con:testStep type="groovy" name="Transfer_JSessionID" id="ca0e6f69-f2bd-4075-b1fe-e5b14cadcc34"><con:settings/><con:config><script>var test = testRunner.getTestCase().getTestStepByName("StartSession").httpRequest.response.responseHeaders;
+
+var full = test.toString();
+var jStart = full.indexOf("JSESSIONID");
+var jEnd = full.indexOf("; Path=");
+var jValue = full.substring(jStart, jEnd+1);
+
+var tStart = full.indexOf("mint-sso-token");
+var tEnd = full.indexOf("GMT;");
+var tValue = full.substring(tStart, tEnd+4);
+
+
+context.setProperty("JSessionID", jValue);
+context.setProperty("MintToken", tValue);
+
+log.info(jValue);
+log.info(tValue);</script></con:config></con:testStep><con:testStep type="restrequest" name="GetUser" id="4372d75e-629a-426a-90e0-fe0b0b09158c"><con:settings/><con:config service="http://eclipselab1.vf.rogers.com" resourcePath="/platform/rest/v37/user/{UserID}" methodName="GetUser" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="GetUser" id="c8217f27-8906-4cba-8b92-dca316a65074" mediaType="application/json"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment xmlns:con="http://eviware.com/soapui/config">
+  &lt;con:entry key="CAMP-SESSION" value="${CampID}"/>
+  &lt;con:entry key="Cookie" value="${JSessionID} ${MintToken}"/>
+&lt;/xml-fragment></con:setting></con:settings><con:request/><con:originalUri>http://eclipselab1.vf.rogers.com/platform/rest/v37/user/</con:originalUri><con:assertion type="Valid HTTP Status Codes" id="681f93ff-7e97-45c4-ab81-6fba1865e67d" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:parameters>
+  <con:entry key="X-DEBUG-HHID" value="${#Project#HHID}"/>
+  <con:entry key="X-W3-DEVICE-ID" value="${#Project#DeviceID}"/>
+  <con:entry key="Content-Type" value="application/json; charset=utf-8"/>
+</con:parameters><con:parameterOrder><con:entry>CAMP-SESSION</con:entry><con:entry>Content-Type</con:entry><con:entry>X-W3-DEVICE-ID</con:entry><con:entry>X-DEBUG-HHID</con:entry><con:entry>UserID</con:entry><con:entry>GroupID</con:entry></con:parameterOrder></con:restRequest></con:config></con:testStep><con:testStep type="restrequest" name="GetChannelsByFormat" id="3f5bed62-0bc5-4701-9bc7-2063d0bf1006"><con:settings/><con:config service="http://eclipselab1.vf.rogers.com" resourcePath="/videos/rest/v35/channels" methodName="Channels" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="GetChannelsByFormat" id="af5f969c-cdd9-47b7-9ce6-8a504fc9b839" mediaType="application/json"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment xmlns:con="http://eviware.com/soapui/config">
+  &lt;con:entry key="CAMP-SESSION" value="${CampID}"/>
+  &lt;con:entry key="Cookie" value="${JSessionID} ${MintToken}"/>
+&lt;/xml-fragment></con:setting></con:settings><con:request/><con:originalUri>http://eclipselab1.vf.rogers.com/videos/rest/v35/channels</con:originalUri><con:assertion type="Valid HTTP Status Codes" id="8763edc4-26de-413c-8e42-67352ade9c21" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200</codes></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:parameters>
+  <con:entry key="X-DEBUG-HHID" value="${#Project#HHID}"/>
+  <con:entry key="X-W3-DEVICE-ID" value="${#Project#DeviceID}"/>
+  <con:entry key="format" value="id"/>
+  <con:entry key="Content-Type" value="application/json; charset=utf-8"/>
+</con:parameters><con:parameterOrder><con:entry>CAMP-SESSION</con:entry><con:entry>Content-Type</con:entry><con:entry>X-W3-DEVICE-ID</con:entry><con:entry>X-DEBUG-HHID</con:entry><con:entry>format</con:entry><con:entry>ratingId</con:entry></con:parameterOrder></con:restRequest></con:config></con:testStep><con:testStep type="restrequest" name="EndSession" id="adc066b8-8526-4bac-bea6-91ca7b9849e1"><con:settings/><con:config service="http://eclipselab1.vf.rogers.com" resourcePath="/platform/rest/v37/session/end" methodName="End" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="EndSession" id="563f4d1f-356e-4bbd-be8f-ffdc93bb1770" mediaType="application/json"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment xmlns:con="http://eviware.com/soapui/config">
+  &lt;con:entry key="CAMP-SESSION" value="${CampID}"/>
+  &lt;con:entry key="Cookie" value="${JSessionID} ${MintToken}"/>
+&lt;/xml-fragment></con:setting></con:settings><con:request/><con:originalUri>http://eclipselab1.vf.rogers.com/platform/rest/v37/session/end</con:originalUri><con:assertion type="Valid HTTP Status Codes" id="62cded87-0468-4f9a-a7f4-bef6213da496" name="Valid HTTP Status Codes"><con:settings/><con:configuration><codes>200
+</codes></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>No Authorization</con:selectedAuthProfile><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:parameters>
+  <con:entry key="X-DEBUG-HHID" value="${#Project#HHID}"/>
+  <con:entry key="X-W3-DEVICE-ID" value="${#Project#DeviceID}"/>
+  <con:entry key="Content-Type" value="application/json; charset=utf-8"/>
+</con:parameters><con:parameterOrder><con:entry>CAMP-SESSION</con:entry><con:entry>Content-Type</con:entry><con:entry>X-W3-DEVICE-ID</con:entry><con:entry>X-DEBUG-HHID</con:entry></con:parameterOrder></con:restRequest></con:config></con:testStep><con:properties/><con:reportParameters/><con:breakPoints><con:testStepId>c9a9a897-38fd-4afc-aade-db50aeb13105</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints></con:testCase>
